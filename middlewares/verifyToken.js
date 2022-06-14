@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
@@ -5,6 +6,7 @@ import userRepository from '../repositories/userRepository.js';
 
 dotenv.config();
 
+// eslint-disable-next-line consistent-return
 export default async function verifyToken(req, res, next) {
   const { authorization } = req.headers;
 

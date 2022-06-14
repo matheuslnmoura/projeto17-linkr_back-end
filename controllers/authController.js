@@ -1,3 +1,4 @@
+/* eslint-disable object-curly-newline */
 /* eslint-disable import/extensions */
 /* eslint-disable no-console */
 /* eslint-disable import/prefer-default-export */
