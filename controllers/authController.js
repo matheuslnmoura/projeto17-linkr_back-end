@@ -10,7 +10,9 @@ import usersRepository from '../repositories/userRepository.js';
 dotenv.config();
 
 export async function signup(req, res) {
-  const { email, password, userName, imageUrl } = req.body;
+  const {
+    email, password, userName, imageUrl,
+  } = req.body;
 
   const hashCost = 10;
   const passwordHash = bcrypt.hashSync(password, hashCost);
@@ -24,7 +26,9 @@ export async function signup(req, res) {
       });
     }
 
-    await usersRepository.createUser({ email, password: passwordHash, userName, imageUrl });
+    await usersRepository.createUser({
+      email, password: passwordHash, userName, imageUrl,
+    });
 
     return res.status(201).json({
       message: 'User created successfully',
