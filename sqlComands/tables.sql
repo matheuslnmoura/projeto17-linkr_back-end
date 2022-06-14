@@ -1,7 +1,8 @@
 CREATE TABLE "users"(
     id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
+    url TEXT NOT NULL,
+    user_name TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()        
 )
