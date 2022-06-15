@@ -12,12 +12,14 @@ async function getUserByEmail(email) {
 async function createUser({
   email, password, userName, imageUrl,
 }) {
-  return connection.query('INSERT INTO users (email, password, user_name, url) VALUES ($1, $2, $3, $4)', [
-    email,
-    password,
-    userName,
-    imageUrl,
-  ]);
+  return connection.query(
+    'INSERT INTO users (email, password, user_name, url) VALUES ($1, $2, $3, $4)',
+    [email, password, userName, imageUrl],
+  );
+}
+
+async function getUserById(id) {
+  return connection.query('SELECT * FROM users WHERE id = $1', [id]);
 }
 
 async function getUserPageById(id) {
@@ -42,6 +44,7 @@ const usersRepository = {
   getUserByEmail,
   createUser,
   getUserPageById,
+  getUserById,
 };
 
 export default usersRepository;
