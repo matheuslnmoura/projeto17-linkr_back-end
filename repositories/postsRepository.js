@@ -16,8 +16,16 @@ export async function insertPost(post) {
   );
 }
 
+export async function getPosts() {
+  return connection.query(`SELECT users.user_name, users.url, posts.description, posts.url, posts.title_url, posts.description_url
+  FROM posts 
+  JOIN users ON posts.user_id = users.id
+  ORDER BY posts.created_at DESC
+  LIMIT 20;`);
+}
+
 const postsRepository = {
-  insertPost,
+  insertPost, getPosts,
 };
 
 export default postsRepository;
