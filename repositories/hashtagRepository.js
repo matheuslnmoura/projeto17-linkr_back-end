@@ -12,8 +12,19 @@ async function getHashtagByName(hashtag) {
   `, [hashtag]);
 }
 
+async function getMostUsedHashtags() {
+  return connection.query(`
+    SELECT hashtags.name, COUNT(post_hashtags.hashtag_id) AS number_of_posts
+    FROM post_hashtags
+    JOIN hashtags ON hashtags.id = post_hashtags.hashtag_id
+    GROUP BY post_hashtags.hashtag_id, hashtags.name
+    ORDER BY number_of_posts DESC
+  `);
+}
+
 const hashtagRepository = {
   getHashtagByName,
+  getMostUsedHashtags,
 };
 
 export default hashtagRepository;

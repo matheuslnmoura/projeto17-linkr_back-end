@@ -21,3 +21,23 @@ export async function getHashtag(req, res) {
     return res.sendStatus(500); // server error
   }
 }
+
+export async function getTrendingHashtags(req, res) {
+  try {
+    const result = (await hashtagRepository.getMostUsedHashtags()).rows;
+    const hashtagsNamesInOrder = [];
+
+    if (result.length === 0) {
+      return res.status(404).json({
+        message: 'No hashtags found on any of the posts :(',
+      });
+    }
+
+    result.forEach((item) => hashtagsNamesInOrder.push(item.name.toLowerCase()));
+
+    return res.send(hashtagsNamesInOrder);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500); // server error
+  }
+}
