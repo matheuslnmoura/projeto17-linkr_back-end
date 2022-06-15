@@ -4,12 +4,15 @@
 
 import usersRepository from '../repositories/userRepository.js';
 
-export async function getUsers(req, res) {
+export async function getUserPageById(req, res) {
+  const { id } = req.params;
   try {
-    const result = (await usersRepository.getAllUsers()).rows;
-    return res.send(result);
+    const result = (await usersRepository.getUserPageById(id));
+    const user = result.rows;
+
+    return res.send(user);
   } catch (error) {
     console.log(error);
-    return res.sendStatus(500); // server error
+    return res.sendStatus(500);
   }
 }
