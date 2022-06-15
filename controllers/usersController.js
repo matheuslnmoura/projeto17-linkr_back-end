@@ -2,11 +2,11 @@
 /* eslint-disable no-console */
 /* eslint-disable import/prefer-default-export */
 
-import userRepository from '../repositories/userRepository.js';
+import usersRepository from '../repositories/userRepository.js';
 
 export async function getUsers(req, res) {
   try {
-    const result = (await userRepository.getAllUsers()).rows;
+    const result = (await usersRepository.getAllUsers()).rows;
     return res.send(result);
   } catch (error) {
     console.log(error);
