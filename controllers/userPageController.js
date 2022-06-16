@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable import/prefer-default-export */
 
-import usersRepository from '../repositories/userRepository';
+import usersRepository from '../repositories/userRepository.js';
 
 export async function getUserPageById(req, res) {
   const { id } = req.params;
