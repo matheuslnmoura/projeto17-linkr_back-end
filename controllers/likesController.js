@@ -1,5 +1,7 @@
 /* eslint-disable import/extensions */
-import { addLike, getLike, removeLike } from '../repositories/likeRpository.js';
+import {
+  addLike, getLike, removeLike, getLikes,
+} from '../repositories/likeRepository.js';
 
 export async function likePost(req, res) {
   try {
@@ -30,6 +32,40 @@ export async function unlikePost(req, res) {
     await removeLike(user.id, postId);
 
     return res.status(204).json({ message: 'Like removed', status: 204 });
+  } catch (err) {
+    return res.sendStatus(500);
+  }
+}
+
+function createTooltipText(userId, likesArray) {
+  let likeString;
+  const hasLiked = likesArray.findIndex((element) => element.user_id === userId);
+
+  if (hasLiked >= 0) {
+    likesArray.splice(hasLiked, 1);
+    likeString = `You, ${likesArray[0].user_name} and other ${likesArray.length - 1}`;
+  } else if (likesArray.length > 1) {
+    likeString = `${likesArray[0].user_name}, ${likesArray[1].user_name} and other ${likesArray.length - 2}`;
+  } else {
+    likeString = `${likesArray[0].user_name} Liked`;
+  }
+
+  return likeString;
+}
+
+export async function allLikesfromPost(req, res) {
+  try {
+    const { postId } = req.body;
+    const { user } = res.locals;
+
+    const likesFromPost = await getLikes(postId);
+    if (!likesFromPost.rowCount) {
+      return res.status(200).json({ count: likesFromPost.rowCount, tooltipText: 'This post has no likes' });
+    }
+
+    const likeString = createTooltipText(user.id, likesFromPost.rows);
+
+    return res.status(200).json({ count: likesFromPost.rowCount, tooltipText: likeString });
   } catch (err) {
     return res.sendStatus(500);
   }
