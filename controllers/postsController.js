@@ -31,18 +31,22 @@ export async function publishPost(req, res) {
       titleUrl,
       imageUrl,
     };
+    console.log({ publish });
     // eslint-disable-next-line import/no-named-as-default-member
-    const hashtags = description
-      .match(/#\w+/g)
-      .map((hashtag) => hashtag.toLowerCase());
-    console.log({ hashtags });
+    let hashtags = [];
+
+    if (description) hashtags = description.match(/#\w+/g);
+
+    if (hashtags) hashtags = hashtags.map((hashtag) => hashtag.toLowerCase());
+
     const post = (await postsRepository.insertPost(publish)).rows[0];
+
     await Promise.all(
       hashtags.map(async (hashtag) => {
         const hashtagExist = (
           await hashtagRepository.getHashtagIdByName(hashtag)
         ).rows[0];
-        console.log({ hashtagExist });
+
         if (hashtagExist) {
           await postsRepository.insertPostHashtagRelation(
             post.id,
