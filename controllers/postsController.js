@@ -39,11 +39,11 @@ export async function publishPost(req, res) {
     const post = (await postsRepository.insertPost(publish)).rows[0];
     await Promise.all(
       hashtags.map(async (hashtag) => {
-        const hashtagExist = (await hashtagRepository.getHashtagByName(hashtag))
-          .rows[0];
+        const hashtagExist = (
+          await hashtagRepository.getHashtagIdByName(hashtag)
+        ).rows[0];
+        console.log({ hashtagExist });
         if (hashtagExist) {
-          //FIXME: erro quando tem hashtag que ja existe
-          //erro ao publicar error: insert or update on table "post_hashtags" violates foreign key constraint "post_hashtags_hashtag_id_fkey"
           await postsRepository.insertPostHashtagRelation(
             post.id,
             hashtagExist.id,

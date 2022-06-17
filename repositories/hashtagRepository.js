@@ -34,10 +34,22 @@ async function insertHashtag(hashtag) {
   );
 }
 
+async function getHashtagIdByName(hashtag) {
+  return connection.query(
+    `
+    SELECT hashtags.id
+    FROM hashtags
+    WHERE hashtags.name ILIKE $1
+  `,
+    [hashtag],
+  );
+}
+
 const hashtagRepository = {
   getHashtagByName,
   getMostUsedHashtags,
   insertHashtag,
+  getHashtagIdByName,
 };
 
 export default hashtagRepository;
