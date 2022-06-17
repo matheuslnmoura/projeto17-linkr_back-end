@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
   });
 });
 httpServer.listen(4005, () => {
-  console.log('coneectadona porta 4005');
+  console.log('Sockets running on port 4005');
 });
 app.listen(process.env.PORT, () => {
   console.log(chalk.bold.blue('Server running on port', process.env.PORT));

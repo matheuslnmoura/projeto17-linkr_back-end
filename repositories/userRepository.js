@@ -43,11 +43,15 @@ async function getUserByInput(text) {
   const textLowerCase = `${text.toLowerCase()}%`;
   try {
     const result = await connection.query(`
-    SELECT users.id,
+    SELECT users.id,users.url,
     users.user_name FROM users 
     WHERE users.user_name LIKE $1;
     `, [textLowerCase]);
-    return result.rows;
+    const search = result.rows;
+    if (!search[0]) {
+      return ['not found'];
+    }
+    return search;
   } catch (error) {
     console.log(error);
     return error;
