@@ -53,6 +53,7 @@ async function getUserByInput(text) {
     }
     return search;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log(error);
     return error;
   }

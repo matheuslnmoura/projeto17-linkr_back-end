@@ -11,7 +11,10 @@ CREATE TABLE "posts"(
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES "users"("id"),
     url TEXT NOT NULL,
-    description TEXT NOT NULL,
+    description TEXT,
+    image_url TEXT,
+    title_url TEXT NOT NULL,
+    description_url TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),   
     is_deleted BOOLEAN NOT NULL DEFAULT false  
 );
