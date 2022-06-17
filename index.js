@@ -8,6 +8,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 
 import router from './routers/masterRouter.js';
+import usersRepository from './repositories/userRepository.js';
 
 const app = express();
 app.use(cors());
@@ -23,8 +24,9 @@ const io = new Server(httpServer, {
 });
 
 io.on('connection', (socket) => {
-  socket.on('search-value', (value) => {
-    console.log(value);
+  socket.on('search-value', async (value) => {
+    const search = await usersRepository.getUserByInput(value);
+    socket.emit('search_result', search);
   });
 });
 httpServer.listen(4005, () => {

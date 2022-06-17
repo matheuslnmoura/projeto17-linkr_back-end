@@ -39,12 +39,28 @@ async function getUserPageById(id) {
 `, [id]);
 }
 
+async function getUserByInput(text) {
+  const textLowerCase = `${text.toLowerCase()}%`;
+  try {
+    const result = await connection.query(`
+    SELECT users.id,
+    users.user_name FROM users 
+    WHERE users.user_name LIKE $1;
+    `, [textLowerCase]);
+    return result.rows;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}
+
 const usersRepository = {
   getAllUsers,
   getUserByEmail,
   createUser,
   getUserPageById,
   getUserById,
+  getUserByInput,
 };
 
 export default usersRepository;
