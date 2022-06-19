@@ -15,12 +15,30 @@ export async function insertPost(post) {
   );
 }
 
+async function editPost({ postId, description }) {
+  return connection.query(
+    `
+      UPDATE posts SET description = $2 WHERE id = $1 RETURNING *;
+    `,
+    [postId, description],
+  );
+}
+
 export async function getPosts() {
   return connection.query(`SELECT users.user_name, users.url AS icon, posts.description, posts.url, posts.title_url, posts.description_url, posts.image_url
   FROM posts 
   JOIN users ON posts.user_id = users.id
   ORDER BY posts.created_at DESC
   LIMIT 20;`);
+}
+
+async function getPostById(postId) {
+  return connection.query(
+    `
+    SELECT * FROM posts WHERE id = $1;
+    `,
+    [postId],
+  );
 }
 
 async function insertPostHashtagRelation(postId, hashtagId) {
@@ -31,10 +49,21 @@ async function insertPostHashtagRelation(postId, hashtagId) {
   );
 }
 
+async function deletePostHashtagRelation(postId) {
+  return connection.query(
+    `
+      DELETE FROM post_hashtags WHERE post_id = $1;`,
+    [postId],
+  );
+}
+
 const postsRepository = {
   insertPost,
+  editPost,
   getPosts,
   insertPostHashtagRelation,
+  deletePostHashtagRelation,
+  getPostById,
 };
 
 export default postsRepository;

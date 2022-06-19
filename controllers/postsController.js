@@ -70,6 +70,59 @@ export async function publishPost(req, res) {
   }
 }
 
+export async function editPost(req, res) {
+  const { description } = req.body;
+  const { postId } = req.params;
+  const { user } = res.locals;
+
+  try {
+    let hashtags = [];
+
+    if (description) hashtags = description.match(/#\w+/g);
+
+    if (hashtags) hashtags = hashtags.map((hashtag) => hashtag.toLowerCase());
+
+    const isPostOwner =
+      (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
+
+    if (!isPostOwner) {
+      res.sendStatus(403);
+    }
+
+    await postsRepository.deletePostHashtagRelation(postId);
+
+    const post = (await postsRepository.editPost({ postId, description }))
+      .rows[0];
+
+    await Promise.all(
+      hashtags.map(async (hashtag) => {
+        const hashtagExist = (
+          await hashtagRepository.getHashtagIdByName(hashtag)
+        ).rows[0];
+
+        if (hashtagExist) {
+          await postsRepository.insertPostHashtagRelation(
+            post.id,
+            hashtagExist.id,
+          );
+        } else {
+          const newHashtag = (await hashtagRepository.insertHashtag(hashtag))
+            .rows[0];
+          await postsRepository.insertPostHashtagRelation(
+            post.id,
+            newHashtag.id,
+          );
+        }
+      }),
+    );
+
+    res.status(200).send(post);
+  } catch (error) {
+    console.log('erro ao editar o post', error);
+    res.status(500);
+  }
+}
+
 export async function getPosts(req, res) {
   try {
     const result = await postsRepository.getPosts();
