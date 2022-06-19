@@ -37,7 +37,12 @@ export async function publishPost(req, res) {
 
     if (description) hashtags = description.match(/#\w+/g);
 
-    if (hashtags) hashtags = hashtags.map((hashtag) => hashtag.toLowerCase());
+    if (hashtags) {
+      hashtags = hashtags.map((hashtag) => {
+        const hashtagName = hashtag.substring(1);
+        return hashtagName.toLowerCase();
+      });
+    }
 
     const post = (await postsRepository.insertPost(publish)).rows[0];
 
@@ -80,7 +85,12 @@ export async function editPost(req, res) {
 
     if (description) hashtags = description.match(/#\w+/g);
 
-    if (hashtags) hashtags = hashtags.map((hashtag) => hashtag.toLowerCase());
+    if (hashtags) {
+      hashtags = hashtags.map((hashtag) => {
+        const hashtagName = hashtag.substring(1);
+        return hashtagName.toLowerCase();
+      });
+    }
 
     const isPostOwner =
       (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
