@@ -105,7 +105,7 @@ export async function getPosts(req, res) {
     const likes = await getLikesFromPostsRange(postsId[postsId.length - 1]);
     posts = addLikedProperty(user, likes.rows, posts.rows);
     const dividedLikes = divideLikesArray(likes.rows);
-    console.log(addTooltipProperty(user.id, posts, dividedLikes));
+    posts = (addTooltipProperty(user.id, posts, dividedLikes));
 
     res.status(200).send(posts);
   } catch (e) {
