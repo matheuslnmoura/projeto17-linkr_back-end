@@ -6,12 +6,11 @@
 import connection from '../db.js';
 
 export async function insertPost(post) {
-  const {
-    userId, url, description, titleUrl, descriptionUrl, imageUrl,
-  } = post;
+  const { userId, url, description, titleUrl, descriptionUrl, imageUrl } = post;
   return connection.query(
     `
-      INSERT INTO posts (user_id, url, description, title_url, description_url, image_url) VALUES ($1, $2, $3, $4, $5, $6);`,
+      INSERT INTO posts (user_id, url, description, title_url, description_url, image_url) 
+      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`,
     [userId, url, description, titleUrl, descriptionUrl, imageUrl],
   );
 }
@@ -24,8 +23,18 @@ export async function getPosts() {
   LIMIT 20;`);
 }
 
+async function insertPostHashtagRelation(postId, hashtagId) {
+  return connection.query(
+    `
+      INSERT INTO post_hashtags (post_id, hashtag_id) VALUES ($1, $2);`,
+    [postId, hashtagId],
+  );
+}
+
 const postsRepository = {
-  insertPost, getPosts,
+  insertPost,
+  getPosts,
+  insertPostHashtagRelation,
 };
 
 export default postsRepository;

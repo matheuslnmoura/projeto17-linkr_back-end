@@ -11,6 +11,7 @@
 /* eslint-disable no-empty */
 import urlMetadata from 'url-metadata';
 import postsRepository from '../repositories/postsRepository.js';
+import hashtagRepository from '../repositories/hashtagRepository.js';
 
 export async function publishPost(req, res) {
   const { url, description } = req.body;
@@ -30,8 +31,38 @@ export async function publishPost(req, res) {
       titleUrl,
       imageUrl,
     };
+    console.log({ publish });
     // eslint-disable-next-line import/no-named-as-default-member
-    const result = await postsRepository.insertPost(publish);
+    let hashtags = [];
+
+    if (description) hashtags = description.match(/#\w+/g);
+
+    if (hashtags) hashtags = hashtags.map((hashtag) => hashtag.toLowerCase());
+
+    const post = (await postsRepository.insertPost(publish)).rows[0];
+
+    await Promise.all(
+      hashtags.map(async (hashtag) => {
+        const hashtagExist = (
+          await hashtagRepository.getHashtagIdByName(hashtag)
+        ).rows[0];
+
+        if (hashtagExist) {
+          await postsRepository.insertPostHashtagRelation(
+            post.id,
+            hashtagExist.id,
+          );
+        } else {
+          const newHashtag = (await hashtagRepository.insertHashtag(hashtag))
+            .rows[0];
+          await postsRepository.insertPostHashtagRelation(
+            post.id,
+            newHashtag.id,
+          );
+        }
+      }),
+    );
+
     res.sendStatus(201);
   } catch (e) {
     console.log('erro ao publicar', e);
