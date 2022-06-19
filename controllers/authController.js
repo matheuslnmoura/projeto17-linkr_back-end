@@ -68,6 +68,10 @@ export async function signin(req, res) {
     return res.status(200).json({
       message: 'User logged in successfully',
       token,
+      user: {
+        image: user.url,
+        name: user.user_name,
+      },
     });
   } catch (error) {
     return res.status(500).json(error);

@@ -18,6 +18,14 @@ export async function removeLike(userId, postId) {
                           WHERE user_id = $1 AND post_id = $2`, [userId, postId]);
 }
 
+export async function getLikesFromPostsRange(olderPostId) {
+  const likes = await connection.query(`SELECT likes.post_id, users.user_name, users.id FROM likes
+                           join users on likes.user_id = users.id
+                           WHERE likes.post_id >= $1
+                           order by post_id desc`, [olderPostId]);
+  return likes;
+}
+
 export async function getLikes(postId) {
   const likesFromPost = await connection.query(`SELECT likes.user_id, users.user_name FROM likes
                                                 JOIN users ON users.id = likes.user_id
