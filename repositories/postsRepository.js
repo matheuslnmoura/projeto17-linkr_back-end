@@ -25,7 +25,7 @@ async function editPost({ postId, description }) {
 }
 
 export async function getPosts() {
-  return connection.query(`SELECT users.user_name, users.url AS icon, posts.description, posts.url, posts.title_url, posts.description_url, posts.image_url
+  return connection.query(`SELECT posts.id, users.user_name, users.url AS icon, posts.description, posts.url, posts.title_url, posts.description_url, posts.image_url
   FROM posts 
   JOIN users ON posts.user_id = users.id
   ORDER BY posts.created_at DESC
