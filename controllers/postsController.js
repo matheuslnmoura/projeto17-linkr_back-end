@@ -15,7 +15,6 @@ import { getLikesFromPostsRange } from '../repositories/likeRepository.js';
 import { createTooltipText } from './likesController.js';
 import hashtagRepository from '../repositories/hashtagRepository.js';
 
-
 export async function publishPost(req, res) {
   const { url, description } = req.body;
   const userId = res.locals.user.id;
@@ -107,12 +106,16 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
     for (let j = dividedIndex; j < dividedLikesArray.length; j += 1) {
       if (posts[i].post_id === dividedLikesArray[j][0].post_id) {
         found = true;
-        newPost.push({ ...posts[i], tooltipText: createTooltipText(userId, dividedLikesArray[j]) });
+        newPost.push({
+          ...posts[i],
+          tooltipText: createTooltipText(userId, dividedLikesArray[j]),
+        });
         dividedIndex += 1;
       }
     }
 
-    if (!found) newPost.push({ ...posts[i], tolltipText: createTooltipText(userId, []) });
+    if (!found)
+      newPost.push({ ...posts[i], tolltipText: createTooltipText(userId, []) });
   }
 
   return newPost;
@@ -131,6 +134,7 @@ function divideLikesArray(likesArray) {
     }
   }
   return newLikesArray;
+}
 
 export async function editPost(req, res) {
   const { description } = req.body;
@@ -188,7 +192,6 @@ export async function editPost(req, res) {
     console.log('erro ao editar o post', error);
     res.status(500);
   }
-
 }
 
 export async function getPosts(req, res) {
@@ -200,7 +203,7 @@ export async function getPosts(req, res) {
     const likes = await getLikesFromPostsRange(postsId[postsId.length - 1]);
     posts = addLikedProperty(user, likes.rows, posts.rows);
     const dividedLikes = divideLikesArray(likes.rows);
-    posts = (addTooltipProperty(user.id, posts, dividedLikes));
+    posts = addTooltipProperty(user.id, posts, dividedLikes);
 
     res.status(200).send(posts);
   } catch (e) {
