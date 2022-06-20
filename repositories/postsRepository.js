@@ -6,14 +6,20 @@
 import connection from '../db.js';
 
 export async function insertPost(post) {
-  const {
-    userId, url, description, titleUrl, descriptionUrl, imageUrl,
-  } = post;
+  const { userId, url, description, titleUrl, descriptionUrl, imageUrl } = post;
   return connection.query(
     `
       INSERT INTO posts (user_id, url, description, title_url, description_url, image_url) 
       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`,
     [userId, url, description, titleUrl, descriptionUrl, imageUrl],
+  );
+}
+
+async function deletePost(postId) {
+  return connection.query(
+    `
+    UPDATE posts SET is_deleted = true WHERE id = $1 RETURNING *;`,
+    [postId],
   );
 }
 
@@ -68,6 +74,7 @@ async function deletePostHashtagRelation(postId) {
 const postsRepository = {
   insertPost,
   editPost,
+  deletePost,
   getPosts,
   insertPostHashtagRelation,
   deletePostHashtagRelation,
