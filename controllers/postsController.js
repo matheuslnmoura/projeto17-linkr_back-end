@@ -113,7 +113,9 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
       }
     }
 
-    if (!found) { newPost.push({ ...posts[i], tolltipText: createTooltipText(userId, []) }); }
+    if (!found) {
+      newPost.push({ ...posts[i], tolltipText: createTooltipText(userId, []) });
+    }
   }
 
   return newPost;
@@ -151,7 +153,8 @@ export async function editPost(req, res) {
       });
     }
 
-    const isPostOwner = (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
+    const isPostOwner =
+      (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
 
     if (!isPostOwner) {
       res.sendStatus(403);
@@ -206,6 +209,26 @@ export async function getPosts(req, res) {
     res.status(200).send(posts);
   } catch (e) {
     console.log('erro ao pegar os posts', e);
+    res.status(500);
+  }
+}
+
+export async function deletePost(req, res) {
+  const { postId } = req.params;
+  const { user } = res.locals;
+
+  try {
+    const isPostOwner =
+      (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
+
+    if (!isPostOwner) {
+      res.sendStatus(403);
+    }
+
+    await postsRepository.deletePost(postId);
+    res.sendStatus(200);
+  } catch (e) {
+    console.log('erro ao deletar o post', e);
     res.status(500);
   }
 }

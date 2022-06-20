@@ -6,6 +6,7 @@ import {
   publishPost,
   getPosts,
   editPost,
+  deletePost,
 } from '../controllers/postsController.js';
 import verifyToken from '../middlewares/verifyToken.js';
 import postsSchema from '../schemas/posts.schema.js';
@@ -26,4 +27,6 @@ postsRouter.patch(
   schemaValidation(editPostSchema),
   editPost,
 );
+postsRouter.delete('/timeline/:postId', verifyToken, deletePost);
+
 export default postsRouter;
