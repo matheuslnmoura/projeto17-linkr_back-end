@@ -6,9 +6,7 @@
 import connection from '../db.js';
 
 export async function insertPost(post) {
-  const {
-    userId, url, description, titleUrl, descriptionUrl, imageUrl,
-  } = post;
+  const { userId, url, description, titleUrl, descriptionUrl, imageUrl } = post;
   return connection.query(
     `
       INSERT INTO posts (user_id, url, description, title_url, description_url, image_url) 
@@ -35,9 +33,9 @@ async function editPost({ postId, description }) {
 }
 
 export async function getPosts(id, hashtag) {
-  let queryAppend = '';
+  let queryAppend = 'WHERE p.is_deleted = false';
   if (id) {
-    queryAppend = `WHERE u.id = ${id}`;
+    queryAppend = `WHERE u.id = ${id} AND p.is_deleted = false`;
   }
   if (hashtag) {
     queryAppend = `JOIN post_hashtags ON post_hashtags.post_id = p.id
