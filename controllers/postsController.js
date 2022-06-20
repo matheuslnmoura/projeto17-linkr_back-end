@@ -192,9 +192,11 @@ export async function editPost(req, res) {
 }
 
 export async function getPosts(req, res) {
+  const { id } = req.params;
+  console.log(res.locals.user);
   try {
     const user = res.locals.user;
-    let posts = await postsRepository.getPosts();
+    let posts = await postsRepository.getPosts(id);
     let postsId = posts.rows.map((post) => post.post_id);
 
     const likes = await getLikesFromPostsRange(postsId[postsId.length - 1]);
