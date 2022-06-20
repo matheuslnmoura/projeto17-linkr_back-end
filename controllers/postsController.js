@@ -153,8 +153,7 @@ export async function editPost(req, res) {
       });
     }
 
-    const isPostOwner =
-      (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
+    const isPostOwner = (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
 
     if (!isPostOwner) {
       res.sendStatus(403);
@@ -196,9 +195,10 @@ export async function editPost(req, res) {
 
 export async function getPosts(req, res) {
   const { id } = req.params;
+  const { hashtag } = req.params;
   try {
     const user = res.locals.user;
-    let posts = await postsRepository.getPosts(id);
+    let posts = await postsRepository.getPosts(id, hashtag);
     let postsId = posts.rows.map((post) => post.post_id);
 
     const likes = await getLikesFromPostsRange(postsId[postsId.length - 1]);
@@ -218,8 +218,7 @@ export async function deletePost(req, res) {
   const { user } = res.locals;
 
   try {
-    const isPostOwner =
-      (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
+    const isPostOwner = (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
 
     if (!isPostOwner) {
       res.sendStatus(403);
