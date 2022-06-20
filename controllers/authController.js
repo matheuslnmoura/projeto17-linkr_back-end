@@ -44,38 +44,38 @@ export async function signup(req, res) {
 export async function signin(req, res) {
   const { email, password } = req.body;
 
-  try {
-    const user = (await usersRepository.getUserByEmail(email)).rows[0];
+  // try {
+  const user = (await usersRepository.getUserByEmail(email)).rows[0];
 
-    if (!user) {
-      return res.status(401).json({
-        message: 'Email or password is incorrect',
-      });
-    }
-
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        message: 'Email or password is incorrect',
-      });
-    }
-
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '12h',
+  if (!user) {
+    return res.status(401).json({
+      message: 'Email or password is incorrect',
     });
-
-    return res.status(200).json({
-      message: 'User logged in successfully',
-      token,
-      user: {
-        image: user.url,
-        name: user.user_name,
-      },
-    });
-  } catch (error) {
-    return res.status(500).json(error);
   }
+
+  const isPasswordValid = bcrypt.compareSync(password, user.password);
+
+  if (!isPasswordValid) {
+    return res.status(401).json({
+      message: 'Email or password is incorrect',
+    });
+  }
+
+  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    expiresIn: '12h',
+  });
+
+  return res.status(200).json({
+    message: 'User logged in successfully',
+    token,
+    user: {
+      image: user.url,
+      name: user.user_name,
+    },
+  });
+  // } catch (error) {
+  //   return res.status(500).json(error);
+  // }
 }
 
 export async function tokenTest(req, res) {

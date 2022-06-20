@@ -6,7 +6,9 @@
 import connection from '../db.js';
 
 export async function insertPost(post) {
-  const { userId, url, description, titleUrl, descriptionUrl, imageUrl } = post;
+  const {
+    userId, url, description, titleUrl, descriptionUrl, imageUrl,
+  } = post;
   return connection.query(
     `
       INSERT INTO posts (user_id, url, description, title_url, description_url, image_url) 
@@ -25,7 +27,6 @@ async function editPost({ postId, description }) {
 }
 
 export async function getPosts() {
-
   return connection.query(`SELECT p.id AS post_id, u.user_name, u.url AS icon, p.description, p.url, p.title_url, p.description_url, p.image_url, count(l.post_id) AS like_Count FROM posts p
   LEFT JOIN likes l ON  p.id = l.post_id
   JOIN users u ON p.user_id = u.id

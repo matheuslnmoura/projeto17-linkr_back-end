@@ -33,7 +33,6 @@ export async function publishPost(req, res) {
       titleUrl,
       imageUrl,
     };
-    console.log({ publish });
     // eslint-disable-next-line import/no-named-as-default-member
     let hashtags = [];
 
@@ -95,7 +94,6 @@ function addLikedProperty(user, likes, postsArray) {
 }
 
 function addTooltipProperty(userId, posts, dividedLikesArray) {
-  console.log(posts);
   let found = false;
   let newPost = [];
   let dividedIndex = 0;
@@ -114,14 +112,14 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
       }
     }
 
-    if (!found)
-      newPost.push({ ...posts[i], tolltipText: createTooltipText(userId, []) });
+    if (!found) { newPost.push({ ...posts[i], tolltipText: createTooltipText(userId, []) }); }
   }
 
   return newPost;
 }
 
 function divideLikesArray(likesArray) {
+  if (likesArray.length === 0) return [];
   let newLikesArray = [[]];
 
   let auxPostId = likesArray[0].post_id;
@@ -153,8 +151,7 @@ export async function editPost(req, res) {
       });
     }
 
-    const isPostOwner =
-      (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
+    const isPostOwner = (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
 
     if (!isPostOwner) {
       res.sendStatus(403);
@@ -204,7 +201,6 @@ export async function getPosts(req, res) {
     posts = addLikedProperty(user, likes.rows, posts.rows);
     const dividedLikes = divideLikesArray(likes.rows);
     posts = addTooltipProperty(user.id, posts, dividedLikes);
-
     res.status(200).send(posts);
   } catch (e) {
     console.log('erro ao pegar os posts', e);
