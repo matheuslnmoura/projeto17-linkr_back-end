@@ -5,7 +5,7 @@ import {
 
 export async function likePost(req, res) {
   try {
-    const { postId } = req.body;
+    const { postId } = req.body.data;
     const { user } = res.locals;
 
     const like = await getLike(user.id, postId);
@@ -37,18 +37,21 @@ export async function unlikePost(req, res) {
   }
 }
 
-function createTooltipText(userId, likesArray) {
+export function createTooltipText(userId, likesArray) {
   let likeString;
-  const hasLiked = likesArray.findIndex((element) => element.user_id === userId);
+  const hasLiked = likesArray.findIndex((element) => element.id === userId);
 
+  // User has liked
   if (hasLiked >= 0) {
     likesArray.splice(hasLiked, 1);
-    likeString = `You, ${likesArray[0].user_name} and other ${likesArray.length - 1}`;
-  } else if (likesArray.length > 1) {
+    if (likesArray.length >= 1) {
+      likeString = `You, ${likesArray[0].user_name} and other ${likesArray.length - 1}`;
+    } else { likeString = 'You Liked'; }
+  } else /* User has not liked */ if (likesArray.length > 1) {
     likeString = `${likesArray[0].user_name}, ${likesArray[1].user_name} and other ${likesArray.length - 2}`;
-  } else {
+  } else if (likesArray.length === 1) {
     likeString = `${likesArray[0].user_name} Liked`;
-  }
+  } else if (likesArray.length === 0) { likeString = 'There is no likes'; }
 
   return likeString;
 }
