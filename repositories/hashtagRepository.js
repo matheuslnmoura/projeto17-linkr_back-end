@@ -4,7 +4,7 @@ import connection from '../db.js';
 async function getHashtagByName(hashtag) {
   return connection.query(
     `
-    SELECT users.user_name, users.url AS icon, posts.description, posts.url, posts.title_url, posts.description_url, posts.image_url
+    SELECT users.user_name, users.url AS icon,posts.id as post_id, posts.description, posts.url, posts.title_url, posts.description_url, posts.image_url
     FROM posts
     JOIN users ON posts.user_id = users.id
     JOIN post_hashtags ON post_hashtags.post_id = posts.id

@@ -193,7 +193,6 @@ export async function editPost(req, res) {
 
 export async function getPosts(req, res) {
   const { id } = req.params;
-  console.log(res.locals.user);
   try {
     const user = res.locals.user;
     let posts = await postsRepository.getPosts(id);
