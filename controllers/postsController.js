@@ -95,7 +95,6 @@ function addLikedProperty(user, likes, postsArray) {
 }
 
 function addTooltipProperty(userId, posts, dividedLikesArray) {
-  console.log(posts);
   let found = false;
   let newPost = [];
   let dividedIndex = 0;
@@ -114,8 +113,7 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
       }
     }
 
-    if (!found)
-      newPost.push({ ...posts[i], tolltipText: createTooltipText(userId, []) });
+    if (!found) { newPost.push({ ...posts[i], tolltipText: createTooltipText(userId, []) }); }
   }
 
   return newPost;
@@ -153,8 +151,7 @@ export async function editPost(req, res) {
       });
     }
 
-    const isPostOwner =
-      (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
+    const isPostOwner = (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
 
     if (!isPostOwner) {
       res.sendStatus(403);
