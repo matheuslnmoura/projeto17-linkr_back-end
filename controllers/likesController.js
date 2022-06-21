@@ -37,8 +37,9 @@ export async function unlikePost(req, res) {
   }
 }
 
-export function createTooltipText(userId, likesArray) {
+export function createTooltipText(userId, likesArrayOrigin) {
   let likeString;
+  const likesArray = [...likesArrayOrigin];
   const hasLiked = likesArray.findIndex((element) => element.id === userId);
 
   // User has liked

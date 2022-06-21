@@ -6,7 +6,9 @@
 import connection from '../db.js';
 
 export async function insertPost(post) {
-  const { userId, url, description, titleUrl, descriptionUrl, imageUrl } = post;
+  const {
+    userId, url, description, titleUrl, descriptionUrl, imageUrl,
+  } = post;
   return connection.query(
     `
       INSERT INTO posts (user_id, url, description, title_url, description_url, image_url) 
