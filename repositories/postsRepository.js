@@ -3,6 +3,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable eol-last */
 /* eslint-disable import/extensions */
+import sqlString from 'sqlstring';
 import connection from '../db.js';
 
 export async function insertPost(post) {
@@ -34,24 +35,92 @@ async function editPost({ postId, description }) {
   );
 }
 
-export async function getPosts(id, hashtag) {
-  let queryAppend = 'WHERE p.is_deleted = false';
-  if (id) {
-    queryAppend = `WHERE u.id = ${id} AND p.is_deleted = false`;
+export async function getPosts(idParams, idToken, hashtag) {
+  let postAppend = ` WHERE   
+                        p.is_deleted = false`;
+  let repostAppend = `WHERE 
+                        p.is_deleted = false
+                       AND
+                        r.is_deleted = false`;
+
+  if (idParams) {
+    repostAppend += ` AND 
+                      r.user_id = ${sqlString.escape(idParams)}`;
+    postAppend += `AND 
+                    u.id = ${sqlString.escape(idParams)}`;
   }
-  if (hashtag) {
-    queryAppend = `JOIN post_hashtags ON post_hashtags.post_id = p.id
-    JOIN hashtags ON hashtags.id = post_hashtags.hashtag_id
-    WHERE hashtags.name ILIKE '${hashtag}'
-    AND p.is_deleted = false`;
-  }
-  return connection.query(`SELECT p.id AS post_id, u.user_name, u.url AS icon, p.description, p.url, p.title_url, p.description_url, p.image_url, count(l.post_id) AS like_Count FROM posts p
-  LEFT JOIN likes l ON  p.id = l.post_id
-  JOIN users u ON p.user_id = u.id
-  ${queryAppend}
-  GROUP BY p.id, u.user_name, u.url, p.description , p.url, p.title_url, p.description_url, p.image_url
-  ORDER BY p.created_at DESC
-  LIMIT 20;`);
+
+  return connection.query(`SELECT *
+        FROM (
+        SELECT 
+            p.id AS post_id, 
+            u.user_name, 
+            p.description, 
+            p.url, 
+            u.url AS icon,
+            p.title_url, 
+            p.description_url, 
+            p.image_url, 
+            count(l.post_id) AS like_Count,
+            (SELECT COUNT(*) 
+                FROM likes 
+                JOIN posts  ON likes.post_id = posts.id
+                WHERE 
+                    likes.user_id = ${sqlString.escape(idToken)} -- token
+                    AND likes.post_id = p.id) AS liked_by_me,
+            null as user_name_repost,
+            null as user_id_repost,
+            p.created_at
+        FROM posts p
+        LEFT JOIN likes l 
+            ON  p.id = l.post_id
+        JOIN users u 
+            ON p.user_id = u.id
+        ${postAppend}
+        GROUP BY p.id, u.user_name, u.url, p.description , p.url, p.title_url, p.description_url, p.image_url
+        
+        UNION ALL
+        
+        SELECT 
+            p.id AS post_id, 
+            u.user_name, 
+            p.description, 
+            p.url, 
+            u.url AS icon,
+            p.title_url, 
+            p.description_url, 
+            p.image_url, 
+            count(l.post_id) AS like_Count,
+            (SELECT COUNT(*) 
+                FROM likes 
+                JOIN posts  ON likes.post_id = posts.id
+                WHERE 
+                    likes.user_id = ${sqlString.escape(idToken)} -- token
+                    AND likes.post_id = p.id) AS liked_by_me,
+            ur.user_name as user_name_repost,
+            r.user_id as user_id_repost,
+            r.created_at
+        FROM reposts r
+        JOIN users ur
+            ON ur.id = r.user_id
+        JOIN posts p 
+            ON p.id = r.post_id
+        LEFT JOIN likes l 
+            ON  p.id = l.post_id
+        JOIN users u 
+            ON p.user_id = u.id
+          ${repostAppend}
+        GROUP BY p.id, u.user_name, u.url, p.description , p.url, p.title_url, p.description_url, p.image_url, ur.user_name, r.user_id, r.created_at
+    ) dum
+
+ORDER BY created_at DESC
+LIMIT 20;`);
+  //   if (hashtag) {
+  //     queryAppend = `JOIN post_hashtags ON post_hashtags.post_id = p.id
+  //     JOIN hashtags ON hashtags.id = post_hashtags.hashtag_id
+  //     WHERE hashtags.name ILIKE '${hashtag}'
+  //     AND p.is_deleted = false`;
+  //   }
 }
 
 async function getPostById(postId) {
