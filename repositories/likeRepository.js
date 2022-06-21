@@ -20,7 +20,7 @@ export async function removeLike(userId, postId) {
                           WHERE user_id = $1 AND post_id = $2`, [userId, postId]);
 }
 
-export async function getLikesFromPostsRange(userId) {
+export async function getAllLikes(userId) {
   const likes = await connection.query(`SELECT likes.post_id, users.user_name, users.id FROM likes
                            join users on likes.user_id = users.id
                            WHERE likes.user_id != ${sqlString.escape(userId)}

@@ -11,7 +11,7 @@
 /* eslint-disable no-empty */
 import urlMetadata from 'url-metadata';
 import postsRepository from '../repositories/postsRepository.js';
-import { getLikesFromPostsRange } from '../repositories/likeRepository.js';
+import { getAllLikes } from '../repositories/likeRepository.js';
 import { createTooltipText } from './likesController.js';
 import hashtagRepository from '../repositories/hashtagRepository.js';
 
@@ -81,21 +81,22 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
   let found = false;
   let newPost = [];
 
-  for (let i = 0; i < posts.length; i += 1) { // For que varre o array dos posts
+  for (let i = 0; i < posts.length; i += 1) {
     found = false;
 
-    for (let j = 0; j < dividedLikesArray.length; j += 1) { // For que varre o array dos likes
-      if (posts[i].post_id === dividedLikesArray[j][0].post_id) { // If que verifica se o array dos likes é do post externo
-        found = true; // Se for diz que achou
+    for (let j = 0; j < dividedLikesArray.length; j += 1) {
+      if (posts[i].post_id === dividedLikesArray[j][0].post_id && found === false) {
+        found = true;
         newPost.push({
           ...posts[i],
           tooltipText: createTooltipText(dividedLikesArray[j]),
-        }); // Adiciona o texto da tooltip com os likes
+        });
+        break;
       }
     }
 
     if (!found) {
-      newPost.push({ ...posts[i], tolltipText: createTooltipText([]) }); // Adiciona o texto da tooltip com os likes
+      newPost.push({ ...posts[i], tolltipText: createTooltipText([]) });
     }
   }
 
@@ -184,8 +185,7 @@ export async function getPosts(req, res) {
   try {
     const user = res.locals.user;
     let posts = await postsRepository.getPosts(idParams, user.id, hashtag); // Query do banco
-    let postsId = posts.rows.map((post) => post.post_id); // String com os Ids dos posts originais
-    const likes = await getLikesFromPostsRange(user.id); // Pega todos likes que não são do user
+    const likes = await getAllLikes(user.id);
     const dividedLikes = divideLikesArray(likes.rows);
     posts = addTooltipProperty(user.id, posts.rows, dividedLikes);
     res.status(200).send(posts);
