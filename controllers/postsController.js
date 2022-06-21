@@ -77,44 +77,25 @@ export async function publishPost(req, res) {
   }
 }
 
-function addLikedProperty(user, likes, postsArray) {
-  const likesFromUser = likes.filter((post) => post.id === user.id);
-  let hasLiked = false;
-  const postsWithLiked = postsArray.map((post) => {
-    hasLiked = false;
-    const postId = post.post_id;
-    for (let i = 0; i < likesFromUser.length; i += 1) {
-      if (postId === likesFromUser[i].post_id) {
-        hasLiked = true;
-        break;
-      }
-    }
-    return { ...post, liked: hasLiked };
-  });
-  return postsWithLiked;
-}
-
 function addTooltipProperty(userId, posts, dividedLikesArray) {
   let found = false;
   let newPost = [];
-  let dividedIndex = 0;
 
-  for (let i = 0; i < posts.length; i += 1) {
+  for (let i = 0; i < posts.length; i += 1) { // For que varre o array dos posts
     found = false;
 
-    for (let j = dividedIndex; j < dividedLikesArray.length; j += 1) {
-      if (posts[i].post_id === dividedLikesArray[j][0].post_id) {
-        found = true;
+    for (let j = 0; j < dividedLikesArray.length; j += 1) { // For que varre o array dos likes
+      if (posts[i].post_id === dividedLikesArray[j][0].post_id) { // If que verifica se o array dos likes é do post externo
+        found = true; // Se for diz que achou
         newPost.push({
           ...posts[i],
-          tooltipText: createTooltipText(userId, dividedLikesArray[j]),
-        });
-        dividedIndex += 1;
+          tooltipText: createTooltipText(dividedLikesArray[j]),
+        }); // Adiciona o texto da tooltip com os likes
       }
     }
 
     if (!found) {
-      newPost.push({ ...posts[i], tolltipText: createTooltipText(userId, []) });
+      newPost.push({ ...posts[i], tolltipText: createTooltipText([]) }); // Adiciona o texto da tooltip com os likes
     }
   }
 
@@ -123,14 +104,18 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
 
 function divideLikesArray(likesArray) {
   let newLikesArray = [[]];
-
+  let count = 0;
   let auxPostId = likesArray[0].post_id;
-  for (let i = 0; i < likesArray.length; i += 1) {
-    if (likesArray[i].post_id === auxPostId) {
-      newLikesArray[newLikesArray.length - 1].push(likesArray[i]);
-    } else {
-      auxPostId = likesArray[i].post_id;
-      newLikesArray.push([likesArray[i]]);
+  let sameIdLikeCount = 1;
+
+  for (let i = 0; i < likesArray.length; i += 1) { // For externo que varre os likes de cada post
+    if (likesArray[i].post_id === auxPostId && sameIdLikeCount < 2) { // Se esse id for o mesmo do anterior
+      newLikesArray[newLikesArray.length - 1].push(likesArray[i]); // adiciona na mesma posição
+      sameIdLikeCount += 1;
+    } else { // Caso não for
+      sameIdLikeCount = 1;
+      auxPostId = likesArray[i].post_id; // Altera o ultimo id encontrado
+      newLikesArray.push([likesArray[i]]); // Adiciona uma nova posição no array
     }
   }
   return newLikesArray;
@@ -194,18 +179,15 @@ export async function editPost(req, res) {
 }
 
 export async function getPosts(req, res) {
-  const { id } = req.params;
+  const { idParams } = req.params; // TODO Tratar id Params
   const { hashtag } = req.params;
   try {
     const user = res.locals.user;
-    let posts = await postsRepository.getPosts(id, hashtag);
-    let postsId = posts.rows.map((post) => post.post_id);
-
-    const likes = await getLikesFromPostsRange(postsId[postsId.length - 1]);
-    posts = addLikedProperty(user, likes.rows, posts.rows);
+    let posts = await postsRepository.getPosts(idParams, user.id, hashtag); // Query do banco
+    let postsId = posts.rows.map((post) => post.post_id); // String com os Ids dos posts originais
+    const likes = await getLikesFromPostsRange(user.id); // Pega todos likes que não são do user
     const dividedLikes = divideLikesArray(likes.rows);
-    posts = addTooltipProperty(user.id, posts, dividedLikes);
-
+    posts = addTooltipProperty(user.id, posts.rows, dividedLikes);
     res.status(200).send(posts);
   } catch (e) {
     console.log('erro ao pegar os posts', e);

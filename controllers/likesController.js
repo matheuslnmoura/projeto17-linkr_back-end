@@ -37,24 +37,26 @@ export async function unlikePost(req, res) {
   }
 }
 
-export function createTooltipText(userId, likesArrayOrigin) {
-  let likeString;
-  const likesArray = [...likesArrayOrigin];
-  const hasLiked = likesArray.findIndex((element) => element.id === userId);
+export function createTooltipText(postLikes) {
+  let userLikedString = '';
+  let userHasNotLikedString = '';
 
-  // User has liked
-  if (hasLiked >= 0) {
-    likesArray.splice(hasLiked, 1);
-    if (likesArray.length >= 1) {
-      likeString = `You, ${likesArray[0].user_name} and other ${likesArray.length - 1}`;
-    } else { likeString = 'You Liked'; }
-  } else /* User has not liked */ if (likesArray.length > 1) {
-    likeString = `${likesArray[0].user_name}, ${likesArray[1].user_name} and other ${likesArray.length - 2}`;
-  } else if (likesArray.length === 1) {
-    likeString = `${likesArray[0].user_name} Liked`;
-  } else if (likesArray.length === 0) { likeString = 'There is no likes'; }
+  if (!postLikes) {
+    userLikedString = 'You liked ';
+    userHasNotLikedString = 'There are no likes';
+  }
 
-  return likeString;
+  if (postLikes.length === 1) {
+    userLikedString = `You and ${postLikes[0].user_name} have liked`;
+    userHasNotLikedString = `${postLikes[0].user_name} has liked`;
+  }
+
+  if (postLikes.length > 1) {
+    userLikedString = `You, ${postLikes[0].user_name} ${postLikes.length - 1 > 0 ? `and others ${postLikes.length - 1} ` : ''}have liked`;
+    userHasNotLikedString = `${postLikes[0].user_name} and ${postLikes[1].user_name} ${postLikes.length - 1 > 0 ? `and others ${postLikes.length - 1} ` : ''}have liked`;
+  }
+
+  return [userLikedString, userHasNotLikedString];
 }
 
 export async function allLikesfromPost(req, res) {
