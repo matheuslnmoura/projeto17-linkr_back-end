@@ -39,3 +39,8 @@ CREATE TABLE likes(
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE follows(
+    id SERIAL PRIMARY KEY,
+    follower INTEGER NOT NULL REFERENCES "users"("id");
+    following INTEGER NOT NULL REFERENCES "users"("id");
+);
