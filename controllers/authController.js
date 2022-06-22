@@ -69,6 +69,7 @@ export async function signin(req, res) {
       message: 'User logged in successfully',
       token,
       user: {
+        id: user.id,
         image: user.url,
         name: user.user_name,
       },

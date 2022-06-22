@@ -41,7 +41,7 @@ export function createTooltipText(postLikes) {
   let userLikedString = '';
   let userHasNotLikedString = '';
 
-  if (!postLikes) {
+  if (postLikes.length === 0 || !postLikes) {
     userLikedString = 'You liked ';
     userHasNotLikedString = 'There are no likes';
   }

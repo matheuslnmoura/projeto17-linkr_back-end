@@ -83,7 +83,6 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
 
   for (let i = 0; i < posts.length; i += 1) {
     found = false;
-
     for (let j = 0; j < dividedLikesArray.length; j += 1) {
       if (posts[i].post_id === dividedLikesArray[j][0].post_id && found === false) {
         found = true;
@@ -91,12 +90,16 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
           ...posts[i],
           tooltipText: createTooltipText(dividedLikesArray[j]),
         });
-        break;
       }
     }
-
     if (!found) {
-      newPost.push({ ...posts[i], tolltipText: createTooltipText([]) });
+      newPost.push({
+        ...posts[i],
+        tooltipText: [
+          'You liked ',
+          'There are no likes',
+        ],
+      });
     }
   }
 
@@ -187,7 +190,7 @@ export async function getPosts(req, res) {
     let posts = await postsRepository.getPosts(id, user.id, hashtag); // Query do banco
     const likes = await getAllLikes(user.id);
     const dividedLikes = divideLikesArray(likes.rows);
-    posts = addTooltipProperty(user.id, posts.rows, dividedLikes);
+    posts = addTooltipProperty(user.id, [...posts.rows], dividedLikes);
     res.status(200).send(posts);
   } catch (e) {
     console.log('erro ao pegar os posts', e);
