@@ -39,17 +39,17 @@ export async function getPosts(idParams, idToken, hashtag) {
   let postAppend = `    RIGHT JOIN follows f
                         ON p.user_id = f.following
                         WHERE   
-                        p.is_deleted = false AND
+                        p.is_deleted = false 
+                        AND
                         f.follower = ${sqlString.escape(idToken)}`;
   let repostAppend = `  RIGHT JOIN follows f
-                        ON p.user_id = f.following
+                        ON r.user_id = f.following
                         WHERE 
                         p.is_deleted = false
-                       AND
+                        AND
                         r.is_deleted = false
                         AND
                         f.follower = ${sqlString.escape(idToken)}`;
-  console.log(idParams);
   if (idParams) {
     repostAppend += ` AND 
                       r.user_id = ${sqlString.escape(idParams)}`;
