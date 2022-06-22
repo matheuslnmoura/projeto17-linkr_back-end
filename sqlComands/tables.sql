@@ -46,3 +46,11 @@ CREATE TABLE "reposts" (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     is_deleted BOOLEAN DEFAULT false
 )
+
+CREATE TABLE comments(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES "users"("id"),
+    post_id INTEGER NOT NULL REFERENCES "posts"("id"),
+    comment TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
