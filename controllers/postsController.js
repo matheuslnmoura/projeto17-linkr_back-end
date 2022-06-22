@@ -183,11 +183,11 @@ export async function editPost(req, res) {
 }
 
 export async function getPosts(req, res) {
-  const { idParams } = req.params; // TODO Tratar id Params
+  const { id } = req.params; // TODO Tratar id Params
   const { hashtag } = req.params;
   try {
     const user = res.locals.user;
-    let posts = await postsRepository.getPosts(idParams, user.id, hashtag); // Query do banco
+    let posts = await postsRepository.getPosts(id, user.id, hashtag); // Query do banco
     const likes = await getAllLikes(user.id);
     const dividedLikes = divideLikesArray(likes.rows);
     posts = addTooltipProperty(user.id, [...posts.rows], dividedLikes);

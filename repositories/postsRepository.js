@@ -36,20 +36,32 @@ async function editPost({ postId, description }) {
 }
 
 export async function getPosts(idParams, idToken, hashtag) {
-  let postAppend = ` WHERE   
-                        p.is_deleted = false`;
-  let repostAppend = `WHERE 
+  let postAppend = `    RIGHT JOIN follows f
+                        ON p.user_id = f.following
+                        WHERE   
+                        p.is_deleted = false 
+                        AND
+                        f.follower = ${sqlString.escape(idToken)}`;
+  let repostAppend = `  RIGHT JOIN follows f
+                        ON r.user_id = f.following
+                        WHERE 
                         p.is_deleted = false
-                       AND
-                        r.is_deleted = false`;
-
+                        AND
+                        r.is_deleted = false
+                        AND
+                        f.follower = ${sqlString.escape(idToken)}`;
   if (idParams) {
-    repostAppend += ` AND 
-                      r.user_id = ${sqlString.escape(idParams)}`;
-    postAppend += `AND 
-                    u.id = ${sqlString.escape(idParams)}`;
+    postAppend = `    WHERE 
+                      p.is_deleted = false
+                      AND 
+                      p.user_id = ${sqlString.escape(idParams)}`;
+    repostAppend = `WHERE 
+                    p.is_deleted = false
+                    AND
+                    r.is_deleted = false
+                    AND  
+                    r.user_id = ${sqlString.escape(idParams)}`;
   }
-
   return connection.query(`SELECT *
         FROM (
         SELECT 

@@ -13,7 +13,12 @@ async function createUser({
   email, password, userName, imageUrl,
 }) {
   return connection.query(
-    'INSERT INTO users (email, password, user_name, url) VALUES ($1, $2, $3, $4)',
+    ` WITH inserted_id AS (
+      INSERT INTO users (email, password, user_name, url) 
+      VALUES ($1,$2,$3,$4)
+      RETURNING id)
+      INSERT INTO follows (follower,following)
+      VALUES ((select id  from inserted_id),(select id from inserted_id));`,
     [email, password, userName, imageUrl],
   );
 }
