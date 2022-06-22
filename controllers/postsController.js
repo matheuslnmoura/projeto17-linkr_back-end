@@ -73,7 +73,7 @@ export async function publishPost(req, res) {
     res.sendStatus(201);
   } catch (e) {
     console.log('erro ao publicar', e);
-    res.status(500).send('Erro ao postar');
+    res.status(500).send(e);
   }
 }
 

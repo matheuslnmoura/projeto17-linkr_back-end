@@ -39,10 +39,18 @@ CREATE TABLE likes(
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
+
+CREATE TABLE follows(
+    id SERIAL PRIMARY KEY,
+    follower INTEGER NOT NULL REFERENCES "users"("id");
+    following INTEGER NOT NULL REFERENCES "users"("id");
+);
+
 CREATE TABLE "reposts" (
     id SERIAL PRIMARY KEY,
     post_id INTEGER NOT NULL REFERENCES "posts"("id"),
     user_id INTEGER NOT NULL REFERENCES "users"("id"),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     is_deleted BOOLEAN DEFAULT false
-)
+);
+
