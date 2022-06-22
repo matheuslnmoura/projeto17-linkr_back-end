@@ -1,4 +1,6 @@
-// eslint-disable-next-line import/extensions
+/* eslint-disable import/extensions */
+import sqlString from 'sqlstring';
+
 import connection from '../db.js';
 
 export async function getLike(userId, postId) {
@@ -16,6 +18,14 @@ export async function addLike(userId, postId) {
 export async function removeLike(userId, postId) {
   await connection.query(`DELETE FROM likes 
                           WHERE user_id = $1 AND post_id = $2`, [userId, postId]);
+}
+
+export async function getAllLikes(userId) {
+  const likes = await connection.query(`SELECT likes.post_id, users.user_name, users.id FROM likes
+                           join users on likes.user_id = users.id
+                           WHERE likes.user_id != ${sqlString.escape(userId)}
+                           order by post_id desc`);
+  return likes;
 }
 
 export async function getLikes(postId) {
