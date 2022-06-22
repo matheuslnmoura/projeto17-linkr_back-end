@@ -6,6 +6,6 @@ import verifyToken from '../middlewares/verifyToken.js';
 const followsRouter = Router();
 
 followsRouter.post('/follows', verifyToken, insertFollow);
-followsRouter.delete('/follows', verifyToken, removeFollow);
+followsRouter.patch('/follows', verifyToken, removeFollow);
 
 export default followsRouter;
