@@ -51,10 +51,16 @@ export async function getPosts(idParams, idToken, hashtag) {
                         AND
                         f.follower = ${sqlString.escape(idToken)}`;
   if (idParams) {
-    repostAppend += ` AND 
-                      r.user_id = ${sqlString.escape(idParams)}`;
-    postAppend += `AND 
-                    u.id = ${sqlString.escape(idParams)}`;
+    postAppend = `    WHERE 
+                      p.is_deleted = false
+                      AND 
+                      p.user_id = ${sqlString.escape(idParams)}`;
+    repostAppend = `WHERE 
+                    p.is_deleted = false
+                    AND
+                    r.is_deleted = false
+                    AND  
+                    r.user_id = ${sqlString.escape(idParams)}`;
   }
   return connection.query(`SELECT *
         FROM (
