@@ -62,6 +62,7 @@ export async function getPosts(idParams, idToken, hashtag) {
             p.description_url, 
             p.image_url, 
             count(l.post_id) AS like_Count,
+            count(c.post_id) AS comment_Count,
             (SELECT COUNT(*) 
                 FROM likes 
                 JOIN posts  ON likes.post_id = posts.id
@@ -76,6 +77,8 @@ export async function getPosts(idParams, idToken, hashtag) {
             ON  p.id = l.post_id
         JOIN users u 
             ON p.user_id = u.id
+        LEFT JOIN comments c
+            ON c.post_id = p.id
         ${postAppend}
         GROUP BY p.id, u.user_name, u.url, p.description , p.url, p.title_url, p.description_url, p.image_url
         
@@ -91,12 +94,14 @@ export async function getPosts(idParams, idToken, hashtag) {
             p.description_url, 
             p.image_url, 
             count(l.post_id) AS like_Count,
+            count(c.post_id) AS comment_Count,
             (SELECT COUNT(*) 
                 FROM likes 
                 JOIN posts  ON likes.post_id = posts.id
                 WHERE 
                     likes.user_id = ${sqlString.escape(idToken)} -- token
                     AND likes.post_id = p.id) AS liked_by_me,
+
             ur.user_name as user_name_repost,
             r.user_id as user_id_repost,
             r.created_at
@@ -109,6 +114,8 @@ export async function getPosts(idParams, idToken, hashtag) {
             ON  p.id = l.post_id
         JOIN users u 
             ON p.user_id = u.id
+        LEFT JOIN comments c
+        ON c.post_id = p.id
           ${repostAppend}
         GROUP BY p.id, u.user_name, u.url, p.description , p.url, p.title_url, p.description_url, p.image_url, ur.user_name, r.user_id, r.created_at
     ) dum
