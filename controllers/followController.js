@@ -10,9 +10,21 @@ export async function insertFollow(req, res) {
   const userId = res.locals.user.id;
   try {
     await followRepository.insertFollow(userId, following);
-    res.status(200);
+    res.sendStatus(200);
   } catch (e) {
     console.log('erro ao seguir', e);
+    res.status(500).send(e);
+  }
+}
+
+export async function removeFollow(req, res) {
+  const { following } = req.body;
+  const userId = res.locals.user.id;
+  try {
+    await followRepository.removeFollow(userId, following);
+    res.sendStatus(200);
+  } catch (e) {
+    console.log('erro ao dar unfollow', e);
     res.status(500).send(e);
   }
 }
