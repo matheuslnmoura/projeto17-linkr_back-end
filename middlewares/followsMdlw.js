@@ -8,7 +8,7 @@ export default async function followsMdw(req, res, next) {
     const follows = await searchFollow(userId);
     if (follows.rowCount === 0) {
       const msg = {
-        message: 'You don\'t follow anyone yet.Search for new friends!',
+        message: 'You don\'t follow anyone yet. Search for new friends!',
       };
       return res.send(msg);
     }
