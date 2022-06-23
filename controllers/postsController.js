@@ -35,7 +35,7 @@ export async function publishPost(req, res) {
     };
     console.log({ publish });
     // eslint-disable-next-line import/no-named-as-default-member
-    let hashtags = [];
+    let hashtags;
 
     if (description) hashtags = description.match(/#\w+/g);
 
@@ -44,6 +44,8 @@ export async function publishPost(req, res) {
         const hashtagName = hashtag.substring(1);
         return hashtagName.toLowerCase();
       });
+    } else {
+      hashtags = [];
     }
 
     const post = (await postsRepository.insertPost(publish)).rows[0];
