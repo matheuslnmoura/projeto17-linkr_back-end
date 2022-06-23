@@ -22,6 +22,16 @@ async function getUserById(id) {
   return connection.query('SELECT * FROM users WHERE id = $1', [id]);
 }
 
+async function getUserFollowers(id) {
+  const { rows, rowsCount } = await connection.query('SELECT following FROM follows WHERE follower=$1', [id]);
+
+  if (rowsCount === 0) return [];
+
+  const followers = rows.map((row) => row.following);
+  console.log(followers);
+  return followers;
+}
+
 async function getUserPageById(id) {
   return connection.query(`
   SELECT p.id,u.user_name,
@@ -66,6 +76,7 @@ const usersRepository = {
   getUserPageById,
   getUserById,
   getUserByInput,
+  getUserFollowers,
 };
 
 export default usersRepository;

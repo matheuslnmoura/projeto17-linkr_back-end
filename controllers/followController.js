@@ -9,6 +9,13 @@ export async function insertFollow(req, res) {
   const { following } = req.body;
   const userId = res.locals.user.id;
   try {
+    const userIsFollowing = await followRepository.checkUserIsFollowing(userId, following);
+
+    if (userIsFollowing) {
+      res.status(400).send('Você já segue o usuário');
+      return;
+    }
+
     await followRepository.insertFollow(userId, following);
     res.sendStatus(200);
   } catch (e) {
@@ -21,6 +28,13 @@ export async function removeFollow(req, res) {
   const { following } = req.body;
   const userId = res.locals.user.id;
   try {
+    const userIsFollowing = await followRepository.checkUserIsFollowing(userId, following);
+
+    if (!userIsFollowing) {
+      res.status(400).send('Você ainda não segue o usuário');
+      return;
+    }
+
     await followRepository.removeFollow(userId, following);
     res.sendStatus(200);
   } catch (e) {

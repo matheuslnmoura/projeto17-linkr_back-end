@@ -65,6 +65,8 @@ export async function signin(req, res) {
       expiresIn: '12h',
     });
 
+    const followers = await usersRepository.getUserFollowers(user.id);
+
     return res.status(200).json({
       message: 'User logged in successfully',
       token,
@@ -72,6 +74,7 @@ export async function signin(req, res) {
         id: user.id,
         image: user.url,
         name: user.user_name,
+        followers,
       },
     });
   } catch (error) {
