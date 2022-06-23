@@ -7,9 +7,7 @@ import sqlString from 'sqlstring';
 import connection from '../db.js';
 
 export async function insertPost(post) {
-  const {
-    userId, url, description, titleUrl, descriptionUrl, imageUrl,
-  } = post;
+  const { userId, url, description, titleUrl, descriptionUrl, imageUrl } = post;
   return connection.query(
     `
       INSERT INTO posts (user_id, url, description, title_url, description_url, image_url) 
@@ -35,7 +33,9 @@ async function editPost({ postId, description }) {
   );
 }
 
-export async function getPosts(idParams, idToken, hashtag) {
+export async function getPosts(idParams, idToken, hashtag, offset) {
+  const offsetAppend = offset ? `OFFSET ${sqlString.escape(offset)}` : '';
+
   let postAppend = `    RIGHT JOIN follows f
                         ON p.user_id = f.following
                         WHERE   
@@ -133,7 +133,8 @@ export async function getPosts(idParams, idToken, hashtag) {
     ) dum
 
 ORDER BY created_at DESC
-LIMIT 20;`);
+${offsetAppend}
+LIMIT 10;`);
   //   if (hashtag) {
   //     queryAppend = `JOIN post_hashtags ON post_hashtags.post_id = p.id
   //     JOIN hashtags ON hashtags.id = post_hashtags.hashtag_id
