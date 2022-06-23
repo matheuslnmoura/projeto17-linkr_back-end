@@ -13,7 +13,7 @@ async function createUser({
   email, password, userName, imageUrl,
 }) {
   return connection.query(
-    'INSERT INTO users (email, password, user_name, url) VALUES ($1, $2, $3, $4)',
+    'INSERT INTO users (email, password, user_name, url) VALUES ($1,$2,$3,$4);',
     [email, password, userName, imageUrl],
   );
 }
