@@ -84,7 +84,10 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
   for (let i = 0; i < posts.length; i += 1) {
     found = false;
     for (let j = 0; j < dividedLikesArray.length; j += 1) {
-      if (posts[i].post_id === dividedLikesArray[j][0].post_id && found === false) {
+      if (
+        posts[i].post_id === dividedLikesArray[j][0].post_id &&
+        found === false
+      ) {
         found = true;
         newPost.push({
           ...posts[i],
@@ -95,10 +98,7 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
     if (!found) {
       newPost.push({
         ...posts[i],
-        tooltipText: [
-          'You liked ',
-          'There are no likes',
-        ],
+        tooltipText: ['You liked ', 'There are no likes'],
       });
     }
   }
@@ -112,11 +112,14 @@ function divideLikesArray(likesArray) {
   let auxPostId = likesArray[0].post_id;
   let sameIdLikeCount = 1;
 
-  for (let i = 0; i < likesArray.length; i += 1) { // For externo que varre os likes de cada post
-    if (likesArray[i].post_id === auxPostId && sameIdLikeCount < 2) { // Se esse id for o mesmo do anterior
+  for (let i = 0; i < likesArray.length; i += 1) {
+    // For externo que varre os likes de cada post
+    if (likesArray[i].post_id === auxPostId && sameIdLikeCount < 2) {
+      // Se esse id for o mesmo do anterior
       newLikesArray[newLikesArray.length - 1].push(likesArray[i]); // adiciona na mesma posição
       sameIdLikeCount += 1;
-    } else { // Caso não for
+    } else {
+      // Caso não for
       sameIdLikeCount = 1;
       auxPostId = likesArray[i].post_id; // Altera o ultimo id encontrado
       newLikesArray.push([likesArray[i]]); // Adiciona uma nova posição no array
@@ -142,7 +145,8 @@ export async function editPost(req, res) {
       });
     }
 
-    const isPostOwner = (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
+    const isPostOwner =
+      (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
 
     if (!isPostOwner) {
       res.sendStatus(403);
@@ -185,9 +189,10 @@ export async function editPost(req, res) {
 export async function getPosts(req, res) {
   const { id } = req.params; // TODO Tratar id Params
   const { hashtag } = req.params;
+  const { offset } = req.query;
   try {
     const user = res.locals.user;
-    let posts = await postsRepository.getPosts(id, user.id, hashtag); // Query do banco
+    let posts = await postsRepository.getPosts(id, user.id, hashtag, offset); // Query do banco
     const likes = await getAllLikes(user.id);
     const dividedLikes = divideLikesArray(likes.rows);
     posts = addTooltipProperty(user.id, [...posts.rows], dividedLikes);
@@ -203,7 +208,8 @@ export async function deletePost(req, res) {
   const { user } = res.locals;
 
   try {
-    const isPostOwner = (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
+    const isPostOwner =
+      (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
 
     if (!isPostOwner) {
       res.sendStatus(403);
