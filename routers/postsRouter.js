@@ -11,6 +11,7 @@ import {
 import verifyToken from '../middlewares/verifyToken.js';
 import postsSchema from '../schemas/posts.schema.js';
 import editPostSchema from '../schemas/edit.schema.js';
+import searchFollowMdw from '../middlewares/verifyFollows.js';
 
 const postsRouter = Router();
 
@@ -20,7 +21,7 @@ postsRouter.post(
   verifyToken,
   publishPost,
 );
-postsRouter.get('/timeline', verifyToken, getPosts);
+postsRouter.get('/timeline', verifyToken, searchFollowMdw, getPosts);
 postsRouter.patch(
   '/timeline/:postId',
   verifyToken,
