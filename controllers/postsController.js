@@ -111,19 +111,15 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
 
 function divideLikesArray(likesArray) {
   let newLikesArray = [[]];
-  let count = 0;
   let auxPostId = likesArray[0].post_id;
-  let sameIdLikeCount = 1;
 
   for (let i = 0; i < likesArray.length; i += 1) {
     // For externo que varre os likes de cada post
-    if (likesArray[i].post_id === auxPostId && sameIdLikeCount < 2) {
+    if (likesArray[i].post_id === auxPostId) {
       // Se esse id for o mesmo do anterior
       newLikesArray[newLikesArray.length - 1].push(likesArray[i]); // adiciona na mesma posição
-      sameIdLikeCount += 1;
     } else {
       // Caso não for
-      sameIdLikeCount = 1;
       auxPostId = likesArray[i].post_id; // Altera o ultimo id encontrado
       newLikesArray.push([likesArray[i]]); // Adiciona uma nova posição no array
     }
