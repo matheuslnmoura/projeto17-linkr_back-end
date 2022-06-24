@@ -7,6 +7,7 @@ import commentRepository from '../repositories/commentRepository.js';
 
 export async function getComments(req, res) {
   const { postId } = req.params;
+
   try {
     const comments = (await commentRepository.getPostComments(postId)).rows;
     if (comments.length === 0) {
