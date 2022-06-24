@@ -99,10 +99,11 @@ export async function getPosts(idParams, idToken, hashtag, offset) {
             p.title_url, 
             p.description_url, 
             p.image_url, 
-            count(l.post_id) AS like_Count,
-            count(c.post_id) AS comment_Count,
+            count(l.post_id) AS like_count,
+            (SELECT COUNT(*) FROM comments
+                WHERE comments.post_id = p.id) as comment_count,
             (SELECT count(*) FROM reposts
-                WHERE reposts.post_id = p.id) as repost_Count,
+                WHERE reposts.post_id = p.id) as repost_count,
             (SELECT COUNT(*) 
                 FROM likes 
                 JOIN posts  ON likes.post_id = posts.id
@@ -136,7 +137,8 @@ export async function getPosts(idParams, idToken, hashtag, offset) {
             p.description_url, 
             p.image_url, 
             count(l.post_id) AS like_Count,
-            count(c.post_id) AS comment_Count,
+            (SELECT COUNT(*) FROM comments
+                WHERE comments.post_id = p.id) as comment_count,
             (SELECT count(*) FROM reposts
                 WHERE reposts.post_id = p.id) as repost_Count,
             (SELECT COUNT(*) 
