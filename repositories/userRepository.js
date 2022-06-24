@@ -1,4 +1,5 @@
 /* eslint-disable import/extensions */
+
 import connection from '../db.js';
 
 async function getAllUsers() {
@@ -40,16 +41,26 @@ async function getUserPageById(id) {
 }
 
 async function getUserByInput(text) {
-  const textLowerCase = `${text.toLowerCase()}%`;
+  const textLowerCase = `${text}%`;
   try {
     const result = await connection.query(`
-    SELECT users.id,users.url,
-    users.user_name FROM users 
-    WHERE users.user_name LIKE $1;
+    SELECT DISTINCT ON (user_name) user_name, url, id,user_followed FROM
+    (SELECT users.id, users.user_name, users.url, true AS user_followed
+    FROM users 
+    JOIN follows 
+    ON users.id = follows.following 
+    WHERE users.user_name 
+    LIKE $1 
+    UNION ALL
+    SELECT users.id,users.user_name, users.url, null AS user_followed
+    FROM users
+    WHERE users.user_name
+    LIKE $1) dum;
     `, [textLowerCase]);
+
     const search = result.rows;
     if (!search[0]) {
-      return ['not found'];
+      return [{ message: 'No results...' }];
     }
     return search;
   } catch (error) {
