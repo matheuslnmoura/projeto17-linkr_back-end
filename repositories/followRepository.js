@@ -14,6 +14,11 @@ export async function removeFollow(userId, following) {
   DELETE FROM follows WHERE "follower" = $1 AND "following" = $2; `, [userId, following]);
 }
 
+export async function checkUserIsFollowing(userId, following) {
+  const { rows } = await connection.query('SELECT * FROM follows WHERE follower = $1 AND following = $2', [userId, following]);
+  return !!rows.length;
+}
+
 export async function searchFollow(userId) {
   return connection.query(`
   SELECT * FROM follows WHERE "follower" = $1`, [userId]);
@@ -22,6 +27,7 @@ export async function searchFollow(userId) {
 const followRepository = {
   insertFollow,
   removeFollow,
+  checkUserIsFollowing,
   searchFollow,
 };
 
