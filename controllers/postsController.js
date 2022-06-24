@@ -87,8 +87,8 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
     found = false;
     for (let j = 0; j < dividedLikesArray.length; j += 1) {
       if (
-        posts[i].post_id === dividedLikesArray[j][0].post_id &&
-        found === false
+        posts[i].post_id === dividedLikesArray[j][0].post_id
+        && found === false
       ) {
         found = true;
         newPost.push({
@@ -147,8 +147,7 @@ export async function editPost(req, res) {
       });
     }
 
-    const isPostOwner =
-      (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
+    const isPostOwner = (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
 
     if (!isPostOwner) {
       res.sendStatus(403);
@@ -210,8 +209,7 @@ export async function deletePost(req, res) {
   const { user } = res.locals;
 
   try {
-    const isPostOwner =
-      (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
+    const isPostOwner = (await postsRepository.getPostById(postId)).rows[0].user_id === user.id;
 
     if (!isPostOwner) {
       res.sendStatus(403);

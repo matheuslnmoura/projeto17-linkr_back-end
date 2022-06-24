@@ -6,17 +6,18 @@
 import followRepository from '../repositories/followRepository.js';
 
 export async function insertFollow(req, res) {
-  const { following } = req.body;
+  const { id } = req.params;
   const userId = res.locals.user.id;
   try {
-    const userIsFollowing = await followRepository.checkUserIsFollowing(userId, following);
+    const idParsed = Number(id);
+    const userIsFollowing = await followRepository.checkUserIsFollowing(userId, idParsed);
 
     if (userIsFollowing) {
       res.status(400).send('Você já segue o usuário');
       return;
     }
 
-    await followRepository.insertFollow(userId, following);
+    await followRepository.insertFollow(userId, id);
     res.sendStatus(200);
   } catch (e) {
     console.log('erro ao seguir', e);
@@ -25,17 +26,18 @@ export async function insertFollow(req, res) {
 }
 
 export async function removeFollow(req, res) {
-  const { following } = req.body;
+  const { id } = req.params;
   const userId = res.locals.user.id;
   try {
-    const userIsFollowing = await followRepository.checkUserIsFollowing(userId, following);
+    const idParsed = Number(id);
+    const userIsFollowing = await followRepository.checkUserIsFollowing(userId, idParsed);
 
     if (!userIsFollowing) {
       res.status(400).send('Você ainda não segue o usuário');
       return;
     }
 
-    await followRepository.removeFollow(userId, following);
+    await followRepository.removeFollow(userId, id);
     res.sendStatus(200);
   } catch (e) {
     console.log('erro ao dar unfollow', e);

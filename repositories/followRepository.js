@@ -15,8 +15,8 @@ export async function removeFollow(userId, following) {
 }
 
 export async function checkUserIsFollowing(userId, following) {
-  const { rowsCount } = connection.query('SELECT * follows WHERE follower = $1 AND following = $2', [userId, following]);
-  return !!rowsCount;
+  const { rows } = await connection.query('SELECT * FROM follows WHERE follower = $1 AND following = $2', [userId, following]);
+  return !!rows.length;
 }
 
 export async function searchFollow(userId) {
