@@ -7,7 +7,9 @@ import sqlString from 'sqlstring';
 import connection from '../db.js';
 
 export async function insertPost(post) {
-  const { userId, url, description, titleUrl, descriptionUrl, imageUrl } = post;
+  const {
+    userId, url, description, titleUrl, descriptionUrl, imageUrl,
+  } = post;
   return connection.query(
     `
       INSERT INTO posts (user_id, url, description, title_url, description_url, image_url) 
@@ -62,9 +64,33 @@ export async function getPosts(idParams, idToken, hashtag, offset) {
                     AND  
                     r.user_id = ${sqlString.escape(idParams)}`;
   }
+  if (hashtag) {
+    postAppend = `
+    JOIN post_hashtags ON
+    p.id = post_hashtags.post_id
+    JOIN hashtags ON
+    post_hashtags.hashtag_id = hashtags.id 
+    WHERE 
+    p.is_deleted = false
+    AND 
+    hashtags.name = ${sqlString.escape(hashtag)}`;
+    repostAppend = `
+    JOIN post_hashtags ON
+    p.id = post_hashtags.post_id
+    JOIN hashtags ON
+    post_hashtags.hashtag_id = hashtags.id 
+    WHERE 
+    p.is_deleted = false
+    AND
+    r.is_deleted = false
+    AND 
+    hashtags.name = ${sqlString.escape(hashtag)}`;
+  }
   return connection.query(`SELECT *
         FROM (
-        SELECT 
+        SELECT
+            p.user_id as user_id,
+            null as repost_user_id,
             p.id AS post_id, 
             u.user_name, 
             p.description, 
@@ -97,6 +123,8 @@ export async function getPosts(idParams, idToken, hashtag, offset) {
         UNION ALL
         
         SELECT 
+            p.user_id as user_id,
+            r.user_id as repost_user_id,
             p.id AS post_id, 
             u.user_name, 
             p.description, 

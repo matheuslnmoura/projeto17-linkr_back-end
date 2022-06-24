@@ -87,6 +87,7 @@ function addTooltipProperty(userId, posts, dividedLikesArray) {
     found = false;
     for (let j = 0; j < dividedLikesArray.length; j += 1) {
       if (
+
         posts[i].post_id === dividedLikesArray[j][0].post_id
         && found === false
       ) {
