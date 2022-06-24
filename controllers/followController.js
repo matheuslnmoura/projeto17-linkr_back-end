@@ -5,6 +5,17 @@
 /* eslint-disable import/extensions */
 import followRepository from '../repositories/followRepository.js';
 
+export async function getFollowers(req, res) {
+  const userId = res.locals.user.id;
+  try {
+    const response = (await followRepository.searchFollow(userId)).rows;
+    res.status(200).send(response);
+  } catch (e) {
+    console.log('erro ao seguir', e);
+    res.status(500).send(e);
+  }
+}
+
 export async function insertFollow(req, res) {
   const { following } = req.body;
   const userId = res.locals.user.id;
