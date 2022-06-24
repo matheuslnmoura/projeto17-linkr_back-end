@@ -9,6 +9,6 @@ import verifyToken from '../middlewares/verifyToken.js';
 const userRouter = Router();
 userRouter.get('/users/', getUsers);
 userRouter.get('/users/:id', verifyToken, getPosts);
-userRouter.get('/user/:id', getUserId);
+userRouter.get('/user/:id', verifyToken, getUserId);
 
 export default userRouter;

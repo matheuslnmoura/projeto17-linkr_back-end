@@ -18,8 +18,8 @@ async function createUser({
   );
 }
 
-async function getUserById(id) {
-  return connection.query('SELECT * FROM users WHERE id = $1', [id]);
+async function getUserById(id, userId) {
+  return connection.query('SELECT users.*, (SELECT COUNT(*) FROM follows WHERE following = $1 AND follower=$2) AS is_following FROM users WHERE id = $3', [id, userId, id]);
 }
 
 async function getUserFollowers(id) {
@@ -28,7 +28,6 @@ async function getUserFollowers(id) {
   if (rowsCount === 0) return [];
 
   const followers = rows.map((row) => row.following);
-  console.log(followers);
   return followers;
 }
 
